@@ -69,39 +69,165 @@
     </form>
 
     <section id="error-btns">
-      <button>Console Log</button>
-      <button>Console Error</button>
-      <button>Console Count</button>
-      <button>Console Warn</button>
-      <button>Console Assert</button>
-      <button>Console Clear</button>
-      <button>Console Dir</button>
-      <button>Console dirxml</button>
-      <button>Console Group Start</button>
-      <button>Console Group End</button>
-      <button>Console Table</button>
-      <button>Start Timer</button>
-      <button>End Timer</button>
-      <button>Console Trace</button>
-      <button>Trigger a Global Error</button>
+      <button id="log">Console Log</button>
+      <button id="error">Console Error</button>
+      <button id="count">Console Count</button>
+      <button id="warn">Console Warn</button>
+      <button id="assert">Console Assert</button>
+      <button id="clear">Console Clear</button>
+      <button id="dir">Console Dir</button>
+      <button id="dirxml">Console dirxml</button>
+      <button id="groupStart">Console Group Start</button>
+      <button id="groupEnd">Console Group End</button>
+      <button id="table">Console Table</button>
+      <button id="timeStart">Start Timer</button>
+      <button id="timeEnd">End Timer</button>
+      <button id="trace">Console Trace</button>
+      <button id="globalError">Trigger a Global Error</button>
     </section>
   </main>
 
+  <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
   <script>
+    window.TrackJS && TrackJS.install({ 
+      token: "939ea6e96c22489486cfe64fe85e1d47"
+      // for more configuration options, see https://docs.trackjs.com
+    });
+  </script>
+  <script>
+    class SecondNumberError extends Error {
+      constructor(message) {
+        super(message);
+        this.name = "SecondNumberError";
+      }
+    }
+
     let form = document.querySelector('form');
     form.addEventListener('submit', e => {
       e.preventDefault();
       let output = document.querySelector('output');
-      let firstNum = document.querySelector('#first-num').value;
-      let secondNum = document.querySelector('#second-num').value;
-      let operator = document.querySelector('#operator').value;
-      output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+      let firstNum;
+      let secondNum;
+      let outputText;
+      try{
+        firstNum = document.querySelector('#first-num').value;
+        if (isNaN(firstNum) || firstNum == '') {
+          throw new SyntaxError("First value is not a valid number");
+        }
+        secondNum = document.querySelector('#second-num').value;
+        if (isNaN(secondNum) || secondNum == '') {
+          throw new SecondNumberError("Second value is not a valid number");
+        }
+        let operator = document.querySelector('#operator').value;
+        outputText = eval(`${firstNum} ${operator} ${secondNum}`);
+      }
+      catch(err){
+        console.error(err)
+        outputText = "NA";
+      }
+      finally {
+        output.innerHTML = outputText;
+      }
     });
 
     let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
 
     // Start your code here
     // You may move this JS to another file if you wish
+    let log = document.getElementById('log');
+    log.addEventListener("click", ()=>{
+      console.log("Console log");
+    })
+    
+    let error = document.getElementById('error');
+    error.addEventListener("click", ()=>{
+      console.error("Console error");
+    })
+
+    let count = document.getElementById('count');
+    count.addEventListener("click", ()=>{
+      console.count("Count");
+    })
+
+    let warn = document.getElementById('warn');
+    warn.addEventListener("click", ()=>{
+      console.warn("Warning");
+    })
+
+    const favNumber = 4
+    const bestNumber = 7
+    const reason = "favNumber should equal bestNumber"
+    let assert = document.getElementById('assert');
+    assert.addEventListener("click", ()=>{
+      console.assert(favNumber == bestNumber, {favNumber, bestNumber, reason});
+    })
+
+    let clear = document.getElementById('clear');
+    clear.addEventListener("click", ()=>{
+      console.clear();
+    })
+
+    let dir = document.getElementById('dir');
+    dir.addEventListener("click", ()=>{
+      console.dir(dir);
+    })
+
+    let dirxml = document.getElementById('dirxml');
+    dirxml.addEventListener("click", ()=>{
+      console.dirxml(dirxml);
+    })
+
+    const label = 'Group Start';
+    let groupStart = document.getElementById('groupStart');
+    groupStart.addEventListener("click", ()=>{
+      console.group("consoleGroup");
+    })
+
+    let groupEnd = document.getElementById('groupEnd');
+    groupEnd.addEventListener("click", ()=>{
+      console.groupEnd("consoleGroup");
+    })
+
+    let table = document.getElementById('table');
+    table.addEventListener("click", ()=>{
+      console.table([
+        {
+          first: "Joanne",
+          last: "Wu",
+        },
+        {
+          first: "Jonny",
+          last: "Tran",
+        }
+      ]);
+    })
+
+    let timeStart = document.getElementById('timeStart');
+    timeStart.addEventListener("click", ()=>{
+      console.time("Time");
+    })
+
+    let timeEnd = document.getElementById('timeEnd');
+    timeEnd.addEventListener("click", ()=>{
+      console.timeEnd("Time");
+    })
+
+    let trace = document.getElementById('trace');
+    trace.addEventListener("click", ()=>{
+      const friend = () => { there(); };
+      const there = () => { hi(); };
+      const hi = () => { console.trace(); };
+      friend();
+    })
+
+    let globalError = document.getElementById('globalError');
+    globalError.addEventListener("click", ()=>{
+      throw new Error("A global error occurred");
+    })
+
+    window.onerror = function(message, source, lineno, colno, error) {
+      console.log(message);
+    };
   </script>
 </body>
 
